@@ -25,6 +25,8 @@ if docker ps -a --format '{{.Names}}' | grep -q '^hh-postgres$'; then
     fi
   else
     echo "[dev-with-db] Postgres container 'hh-postgres' is already running."
+    export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nephthys"
+    echo "[dev-with-db] Using DATABASE_URL=${DATABASE_URL}"
   fi
 else
   echo "[dev-with-db] Creating Postgres container 'hh-postgres'..."
@@ -32,6 +34,10 @@ else
     echo "[dev-with-db] Port 5432 appears in use; creating 'hh-postgres-5433' on 5433..."
     docker run --name hh-postgres-5433 -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres >/dev/null
     export DATABASE_URL="postgresql://postgres:postgres@localhost:5433/nephthys"
+    echo "[dev-with-db] Using DATABASE_URL=${DATABASE_URL}"
+  else
+    # docker run succeeded and exposed Postgres on localhost:5432
+    export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nephthys"
     echo "[dev-with-db] Using DATABASE_URL=${DATABASE_URL}"
   fi
 fi
