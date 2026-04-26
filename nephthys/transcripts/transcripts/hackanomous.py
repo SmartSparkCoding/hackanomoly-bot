@@ -20,7 +20,7 @@ class Hackanomous(Transcript):
 • If you have the answer to your question, hit that green button below!
 """
     ticket_create: str = f"""
-:hackanomoly-v1: Quick check-in while we wait for a helper:
+:hackanomoly-v1: Welcome back to Hackanomous Help! :yayayayayay: Quick check-in, fellow hack clubber! While we wait for a very nice human to come and help you out, I've been told to remind you to:
 • Have a read of <{faq_link}|*the FAQ*> - it might have the answer you're looking for
 • Once your question is (hopefully) answered, hit the button below!
 """
