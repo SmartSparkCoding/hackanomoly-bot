@@ -4,7 +4,7 @@ def get_create_team_tag_modal():
         "callback_id": "create_team_tag",
         "title": {
             "type": "plain_text",
-            "text": ":hackanomoly-v1: create a tag!",
+            "text": ":hackanomoly-v1: tag",
             "emoji": True,
         },
         "blocks": [
@@ -24,7 +24,7 @@ def get_create_team_tag_modal():
         ],
         "submit": {
             "type": "plain_text",
-            "text": ":hackanomoly-v1: add tag?",
+            "text": ":hackanomoly-v1: add",
             "emoji": True,
         },
     }
