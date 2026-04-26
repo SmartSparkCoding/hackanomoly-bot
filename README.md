@@ -1,152 +1,61 @@
-# Nephthys
+# Hackanomoly
 
-Nephthys is the bot powering many support channels in the Hack Club Slack such as #flavortown-help and #identity-help! Below is a guide to set her up for developing and here's a list of some of her features :)
+Hackanomoly is the Slack support bot used for Hack Club help workflows, with ticket routing, helper tooling, App Home dashboards, and automation.
 
-## Features
+## What It Does
 
-### Team tags
+### Ticket Lifecycle
 
-Team tags let you tag tickets that are the responsibility of a specific group of people (or perhaps just one person). E.g. you could have tags for Fufillment, Hack Club Auth, Onboarding flow, etc.
+- Creates a backend ticket whenever a new help message is posted.
+- Posts a user-facing thread reply with a resolve button.
+- Generates short ticket titles.
+- Suggests and applies team tags for routing.
+- Assigns tickets to helpers when helpers reply in-thread.
 
-You can add team tags to tickets in the private tickets channel or with the macro `?tag <tag_name>`. This will DM the people who are specialised in responding to those issues and have it show up in their assigned tickets.
-You can assign yourself to get notified for specific tags on the app home
+### Duplicate Guard
 
-When a new ticket is created, AI automatically assigns the most relevant team tag if one fits.
+- Prevents repeat tickets from the same user within a short window.
+- Uses relatedness checks to decide whether to close the newer ticket as a duplicate.
+- Posts a summary and link to the original ticket when a duplicate is closed.
+
+### App Home
+
+- Dashboard
+- Guide
+- User Profiles
+- Assigned Tickets
+- Team Tags
+- DM User (maintainer-only)
+- My Stats
 
 ### Macros
 
-Sometimes it's nice to be able to do things quickly... Here's where macros come in! Send one of the following messages in an open thread and something will happen
+Helper macros available in help threads:
 
-- `?resolve` - the ticket gets closed. Equivalent of hitting the resolve button
-- `?reopen` - reopen a closed ticket
-- `?identity` - redirect to #identity-help
-- `?faq` - redirect to the FAQ
-- `?hii` - silly message :3
-- `?shipcertqueue` - tell them to wait and vote because there's a backlog of ships
-- `?fraud` - redirect to Fraud Squad
-- `?thread` - remove the reaction and all Nephthys replies to unclutter duplicates
-- `?shipwrights` - redirect to #ask-the-shipwrights
-- more to come?? feel free to PR your own into hackclub/nephthys or tell me what you want
+- `?resolve` and aliases like `?close`
+- `?reopen` and aliases like `?open`, `?unresolve`
+- `?ai` and aliases like `?ask-ai`
+- `?faq`
+- `?identity`
+- `?fraud`
+- `?shipcertqueue` and related aliases
+- `?thread`
+- `?redirect` and aliases like `?admin`
 
-### Stale
+### Scheduled Jobs
 
-~~Tickets that have been not had a response for more than 3 days will automatically be closed as stale. The last helper to respond in the thread gets credit for closing them~~
+- Daily stats summary post.
+- Fulfillment reminder post.
+- Stale-ticket monitor.
 
-Stale ticket handling is not working at the moment, but more features for dealing with stale tickets are planned.
+## Scripts
 
-### Leaderboard
-
-At midnight UK time each day, you get to see the stats for the day in the team channel, as well as a summary of any old tickets that have been waiting for a helper response for over 5 days.
-
-Helpers can see more detailed stats at any time on the app home for the bot!
-
-### Assigned Tickets
-
-When you send a message in a help thread, that thread is assigned to you and it is up to you to resolve it. You can see a list of threads waiting for you on the app home - just select the Assigned Tickets tab at the top
-
-## Prerequisites
-
-- Python (3.13 or later)
-- uv
-- A Slack workspace where you have permissions to install apps
-- Tunneling tool (for local development)
-- A PostgreSQL database (you can run one in Docker using the command below)
+Dummy data generator for performance testing:
 
 ```bash
-docker run --name hh-postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+uv run nephthys/scripts/add_dummy_data.py <num_records>
 ```
-
-## Setting up the Slack App
-
-1. Go to [https://api.slack.com/apps](https://api.slack.com/apps) and click "Create New App".
-2. Choose "From an app manifest" and select your workspace.
-3. Copy and paste the manifest in `manifest.yml`.
-4. Review and create the app.
-5. In the "Basic Information" section, note down the `App Id`, `Client Id`, `Client Secret`, `Signing Secret` .
-6. Go to "OAuth & Permissions" and install the app to your workspace. Note down the "Bot User OAuth Token".
-
-## Setting up the Project
-
-1. Clone the repository:
-
-   ```
-   git clone https://github.com/hackclub/nephthys
-   cd nephthys
-   ```
-
-2. Install dependencies:
-
-   ```
-   uv sync
-   source .venv/bin/activate # for bash/zsh
-   source .venv/bin/activate.fish # for fish
-   source .venv/bin/activate.csh # for csh
-   source .venv/bin/activate.ps1 # for powershell
-   ```
-
-3. Copy the `.env.sample` file to `.env`:
-
-   ```
-   cp .env.sample .env
-   ```
-
-4. Edit the `.env` file and fill in the values:
-
-## Running the Application
-
-1. Start your tunneling tool and expose the local server. (Not needed in socket mode with `SLACK_APP_TOKEN` set)
-
-   Note the HTTPS URL you get.
-
-2. Update your Slack app's request URLs:
-
-   - Go to your Slack app's settings.
-   - In "Event Subscriptions" and "Interactivity & Shortcuts", update the request URL to your HTTPS URL followed by `/slack/events`.
-   - In "OAuth & Permissions", update `Redirect URLs` to your HTTPS URL followed by `/slack/oauth_redirect`.
-
-3. MAKE SURE YOU CHANGE THE COMMAND - DO NOT USE THE SAME COMMAND
-4. Install pre-commit hooks:
-
-   ```
-   uv run pre-commit install
-   ```
-
-5. Start your database and update the database schema:
-
-   ```
-   uv run prisma db push
-   uv run prisma generate
-   ```
-
-6. Start the application:
-   ```
-   nephthys
-   ```
-
-Your Slack app should now be running and connected to your Slack workspace!
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-A work-in progress document with some codebase conventions can be found at [docs/contributing.md](docs/contributing.md).
-
-The [#nephthys-dev](https://hackclub.enterprise.slack.com/archives/C09QR2BH3GE) channel in the Slack is available for technical discussion or questions.
-
-### Scripts
-
-The codebase contains some scripts in the `nephthys/scripts/` directory to help with development and testing. They are documented below.
-
-#### Adding Dummy Data
-
-`add_dummy_data.py` is a script that adds a bunch of dummy (i.e. fake) support ticket records to the database, for stress-testing/performance testing.
-
-Usage: `uv run nephthys/scripts/add_dummy_data.py <num_records>`
-
-- Ensure you run it after the `nephthys` has been run at least once (and once the DB has been initialized)
-- It takes a while to run (adding 20k records takes ~50 seconds on my machine)
-- Don't run this in production, obviously
 
 ## License
 
-This project is licensed under the MIT License.
+MIT

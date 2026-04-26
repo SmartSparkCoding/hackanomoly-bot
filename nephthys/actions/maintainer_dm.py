@@ -43,6 +43,22 @@ def _rich_text_to_plain_text(rich_text_value: dict) -> str:
     return "".join(parts).strip()
 
 
+def _extract_message_from_state(state: dict) -> str:
+    message_state = state.get("message", {}).get("message", {})
+
+    if isinstance(message_state.get("value"), str):
+        return message_state["value"].strip()
+
+    rich_text_value = message_state.get("rich_text_value")
+    if isinstance(rich_text_value, dict):
+        return _rich_text_to_plain_text(rich_text_value)
+
+    if isinstance(message_state.get("value"), dict):
+        return _rich_text_to_plain_text(message_state["value"])
+
+    return ""
+
+
 async def maintainer_dm_btn_callback(
     ack: AsyncAck, body: dict, client: AsyncWebClient
 ):
@@ -67,23 +83,28 @@ async def maintainer_dm_view_callback(
         await send_heartbeat(f"Non-maintainer tried to submit DM modal: <@{user_id}>")
         return
 
-    state = body["view"]["state"]["values"]
-    recipient_id = state["recipient"]["recipient"]["selected_user"]
-    message_value = state["message"]["message"]["value"]
-
-    if isinstance(message_value, dict):
-        message = _rich_text_to_plain_text(message_value)
-    else:
-        message = str(message_value).strip()
+    state = body.get("view", {}).get("state", {}).get("values", {})
+    recipient_id = (
+        state.get("recipient", {}).get("recipient", {}).get("selected_user")
+    )
+    message = _extract_message_from_state(state)
 
     if not recipient_id or not message:
-        await send_heartbeat(f"Maintainer DM submission was missing data for <@{user_id}>")
+        await send_heartbeat(
+            f"Maintainer DM submission was missing data for <@{user_id}>"
+        )
         return
 
-    await client.chat_postMessage(
-        channel=recipient_id,
-        text=message,
-    )
+    try:
+        await client.chat_postMessage(
+            channel=recipient_id,
+            text=message,
+        )
+    except Exception as e:
+        await send_heartbeat(
+            f"Failed to send maintainer DM from <@{user_id}> to <@{recipient_id}>: {e}"
+        )
+        return
 
     await send_heartbeat(
         f"Sent maintainer DM from <@{user_id}> to <@{recipient_id}>",

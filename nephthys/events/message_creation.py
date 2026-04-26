@@ -1,6 +1,7 @@
 import logging
 import random
 import re
+import asyncio
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
@@ -71,6 +72,20 @@ def _tokenize_for_similarity(text: str) -> set[str]:
 
 
 async def is_related_ticket(existing_text: str, new_text: str) -> bool:
+    existing_tokens = _tokenize_for_similarity(existing_text)
+    new_tokens = _tokenize_for_similarity(new_text)
+    if not existing_tokens or not new_tokens:
+        return False
+
+    overlap = existing_tokens.intersection(new_tokens)
+    union = existing_tokens.union(new_tokens)
+    jaccard = len(overlap) / len(union)
+
+    if len(overlap) < 2 or jaccard < 0.15:
+        return False
+    if len(overlap) >= 4 and jaccard >= 0.5:
+        return True
+
     if env.ai_client:
         try:
             response = await env.ai_client.chat.completions.create(
@@ -106,15 +121,6 @@ async def is_related_ticket(existing_text: str, new_text: str) -> bool:
                 return False
         except Exception as e:
             logging.warning(f"Failed relatedness check for duplicate ticket logic: {e}")
-
-    existing_tokens = _tokenize_for_similarity(existing_text)
-    new_tokens = _tokenize_for_similarity(new_text)
-    if not existing_tokens or not new_tokens:
-        return False
-
-    overlap = existing_tokens.intersection(new_tokens)
-    union = existing_tokens.union(new_tokens)
-    jaccard = len(overlap) / len(union)
 
     return len(overlap) >= 3 and jaccard >= 0.35
 
@@ -503,7 +509,15 @@ async def handle_new_question(
 
         ticket = await env.db.ticket.create(ticket_data)
 
-    await update_user_ticket_profile(db_user, text)
+    async def _update_profile_background() -> None:
+        try:
+            await update_user_ticket_profile(db_user, text)
+        except Exception as e:
+            logging.warning(
+                f"Background user ticket profile update failed for user {db_user.id}: {e}"
+            )
+
+    asyncio.create_task(_update_profile_background())
 
     if ai_team_tags:
         await apply_team_tags(ticket.ticketTs, ai_team_tags, client)
@@ -633,10 +647,6 @@ async def on_message(event: Dict[str, Any], client: AsyncWebClient):
             if res.status != 200:
                 await send_heartbeat(
                     f"Failed to ping uptime URL: {res.status} - {await res.text()}"
-                )
-            else:
-                await send_heartbeat(
-                    f"Successfully pinged uptime URL: {res.status} - {await res.text()}"
                 )
 
 

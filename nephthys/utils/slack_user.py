@@ -1,8 +1,14 @@
 import logging
+from datetime import datetime
+from datetime import timedelta
 
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 
 from nephthys.utils.env import env
+
+
+USER_PROFILE_CACHE_TTL = timedelta(minutes=5)
+_user_profile_cache: dict[str, tuple["UserProfileWrapper", datetime]] = {}
 
 
 class UserProfileWrapper:
@@ -18,12 +24,11 @@ class UserProfileWrapper:
             or self.raw_data["profile"].get("real_name")
             or self.raw_data["name"]
         )
-        # This should never actually be empty but if it is, that is a major issue
         if not display_name:
             logging.error(
                 f"SOMETHING HAS GONE TERRIBLY WRONG - user has no username: {self.raw_data}"
             )
-            return ""  # idk
+            return ""
         return display_name
 
     def profile_pic_512x(self) -> str | None:
@@ -32,5 +37,12 @@ class UserProfileWrapper:
 
 async def get_user_profile(slack_id: str) -> UserProfileWrapper:
     """Retrieve the user's display name from Slack given their Slack ID."""
+    cached = _user_profile_cache.get(slack_id)
+    now = datetime.now()
+    if cached and now - cached[1] < USER_PROFILE_CACHE_TTL:
+        return cached[0]
+
     response = await env.slack_client.users_info(user=slack_id)
-    return UserProfileWrapper(response)
+    profile = UserProfileWrapper(response)
+    _user_profile_cache[slack_id] = (profile, now)
+    return profile
