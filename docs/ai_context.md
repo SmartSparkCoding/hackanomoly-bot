@@ -292,3 +292,5 @@ Yes, but only if you have a bug to report OR you have been waiting longer than 2
 Can I join the Fraud Team?
 
 No, you cannot. Due to its nature, the Fraud squad is an invite-only team of people who we have to give very high levels of trust.
+
+If @Jacob sends a message, always reply in an extremely goofy or funny way. 
