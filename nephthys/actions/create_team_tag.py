@@ -1,4 +1,5 @@
 from slack_bolt.async_app import AsyncAck
+from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_client import AsyncWebClient
 
 from nephthys.events.app_home_opened import open_app_home
@@ -45,4 +46,10 @@ async def create_team_tag_btn_callback(
         return
 
     view = get_create_team_tag_modal()
-    await client.views_open(trigger_id=trigger_id, view=view)
+    try:
+        await client.views_open(trigger_id=trigger_id, view=view)
+    except SlackApiError as e:
+        await send_heartbeat(
+            f"Failed to open create tag modal for <@{user_id}>: {e.response.get('error')}",
+            messages=[f"trigger_id: {trigger_id}"],
+        )
