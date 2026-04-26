@@ -15,12 +15,12 @@ class Flavortown(Transcript):
     identity_help_channel: str = "C092833JXKK"  # #identity-help
 
     first_ticket_create: str = f"""
-:rac_info: Hey there (user), and welcome to the support channel! While we wait for someone to help you out, I have a couple of requests for you:
+:hackanomoly-v1: Hey there (user), welcome to the support channel. While we wait for a human helper, a couple of quick things:
 • Take a look through <{faq_link}|*the FAQ*> – you may find a solution waiting there
 • Once your question has been answered, hit that green button below!
 """
     ticket_create: str = f"""
-:rac_info: Ah, hello! While we wait for a human to come and help you out, I've been told to remind you to:
+:hackanomoly-v1: Quick check-in while we wait for a helper:
 • Have a read of <{faq_link}|*the FAQ*> – it might have the answer you're looking for
 • Once your question is answered, hit the button below!
 """
@@ -35,16 +35,16 @@ Hi (user), this question is already answered in our FAQ! Here's the link again: 
 _I've marked this question as resolved, so please start a new thread if you need more help_
 """
     identity_macro: str = f"""
-Hi (user), please could you ask questions about identity verification in <#{identity_help_channel}>? :rac_cute:
+Hey (user), please ask identity verification questions in <#{identity_help_channel}>. :hackanomoly-v1:
 
-It helps the verification team keep track of questions easier!
+That keeps the verification team organized.
 
 _I've marked this thread as resolved_
 """
     fraud_macro: str = """
-Hi (user), would you mind directing any fraud related queries to <@U091HC53CE8>? :rac_cute:
+Hey (user), send any fraud-related questions to <@U091HC53CE8>. :hackanomoly-v1:
 
-It'll keep your case confidential and make it easier for the fraud team to keep track of!
+That keeps your case confidential and easier for the fraud team to track.
 
 _I've marked this thread as resolved_
 """

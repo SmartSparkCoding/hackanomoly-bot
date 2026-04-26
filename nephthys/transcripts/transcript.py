@@ -82,7 +82,7 @@ class Transcript(BaseModel):
     )
 
     fraud_macro: str = Field(
-        default="Hiya (user)! Would you mind directing any fraud related queries to <@U091HC53CE8>? :rac_cute:\n\nIt'll keep your case confidential and make it easier for the fraud team to keep track of!",
+        default="Hey (user)! Please send any fraud-related questions to <@U091HC53CE8>. :hackanomoly-v1:\n\nThat keeps your case confidential and makes it easier for the fraud team to track.",
         description="Message to be sent when the fraud macro is used",
     )
 
@@ -111,7 +111,7 @@ class Transcript(BaseModel):
 
     # this stuff is only required for summer of making, but it's easier to keep it here :p
     dm_magic_link_no_user: str = Field(
-        default=":rac_cute: heya, please provide the user you want me to dm",
+        default=":hackanomoly-v1: please provide the user you want me to dm",
         description="Message when no user provided for magic link DM",
     )
 
@@ -120,12 +120,12 @@ class Transcript(BaseModel):
     )
 
     dm_magic_link_success: str = Field(
-        default=":rac_cute: magic link sent! tell em to check their dms with me :D",
+        default=":hackanomoly-v1: magic link sent! tell them to check their dms.",
         description="Success message for magic link DM",
     )
 
     dm_magic_link_message: str = Field(
-        default=":rac_cute: hey there! i got told that you got a bit stuck so here's a magic link for ya :D\n{magic_link}",
+        default=":hackanomoly-v1: hey there! here’s a magic link to get you unstuck.\n{magic_link}",
         description="Magic link DM message",
     )
 
@@ -137,38 +137,38 @@ class Transcript(BaseModel):
     def set_default_messages(self):
         """Set default values for messages that reference other fields"""
         if not self.first_ticket_create:
-            self.first_ticket_create = f"""oh, hey (user) it looks like this is your first time here, welcome! someone should be along to help you soon but in the mean time i suggest you read the faq <{self.faq_link}|here>, it answers a lot of common questions.
-if your question has been answered, please hit the button below to mark it as resolved
+            self.first_ticket_create = f"""Hey (user), welcome in. This looks like your first ticket here. Someone should be with you shortly, but while you wait, check the FAQ <{self.faq_link}|here> since it covers a lot of common questions.
+If you’re all set, use the button below to mark this as resolved.
     """
 
         if not self.ticket_create:
-            self.ticket_create = f"""someone should be along to help you soon but in the mean time i suggest you read the faq <{self.faq_link}|here> to make sure your question hasn't already been answered. if it has been, please hit the button below to mark it as resolved :D
+            self.ticket_create = f"""Someone should be with you soon. In the meantime, check the FAQ <{self.faq_link}|here> to make sure your question hasn’t already been answered. If it has, use the button below to mark it as resolved.
     """
 
         if not self.ticket_resolve:
-            self.ticket_resolve = f"""oh, oh! it looks like this post has been marked as resolved by <@{{user_id}}>! if you have any more questions, please make a new post in <#{self.help_channel}> and someone'll be happy to help you out! not me though, i'm just a silly racoon ^-^
+            self.ticket_resolve = f"""This post was marked as resolved by <@{{user_id}}>. If you need anything else, make a new post in <#{self.help_channel}> and a human helper will jump in.
     """
 
         if not self.ticket_resolve_stale:
-            self.ticket_resolve_stale = f""":rac_nooo: it looks like this post is a bit old! if you still need help, please make a new post in <#{self.help_channel}> and someone'll be happy to help you out! ^~^
+            self.ticket_resolve_stale = f""":hackanomoly-v1: this post is a bit old. If you still need help, please make a new post in <#{self.help_channel}> and a helper will take a look.
         """
 
         if not self.faq_macro:
-            self.faq_macro = f"hey, (user)! this question is answered in the faq i sent earlier, please make sure to check it out! :rac_cute:\n\n<{self.faq_link}|here it is again>"
+            self.faq_macro = f"Hey (user), this question is already covered in the FAQ I sent earlier. Please take a look. :hackanomoly-v1:\n\n<{self.faq_link}|here it is again>"
 
         if not self.identity_macro:
-            self.identity_macro = f"hey, (user)! please could you ask questions about identity verification in <#{self.identity_help_channel}>? :rac_cute:\n\nit helps the verification team keep track of questions easier!"
+            self.identity_macro = f"Hey (user), please ask identity verification questions in <#{self.identity_help_channel}>. :hackanomoly-v1:\n\nThat keeps the verification team organized."
 
         if not self.not_allowed_channel:
-            self.not_allowed_channel = f"heya, it looks like you're not supposed to be in that channel, pls talk to <@{self.program_owner}> if that's wrong"
+            self.not_allowed_channel = f"Hey, it looks like you’re not supposed to be in that channel. If that’s wrong, please talk to <@{self.program_owner}>."
 
         if not self.dm_magic_link_error:
-            self.dm_magic_link_error = f":rac_nooo: something went wrong while generating the magic link, please bug <@{self.program_owner}> (status: {{status}})"
+            self.dm_magic_link_error = f":hackanomoly-v1: something went wrong while generating the magic link. Please bug <@{self.program_owner}> (status: {{status}})."
 
         if not self.dm_magic_link_no_permission:
-            self.dm_magic_link_no_permission = f":rac_nooo: you don't have permission to use this command, please bug <@{self.program_owner}> if you think this is a mistake"
+            self.dm_magic_link_no_permission = f":hackanomoly-v1: you don’t have permission to use this command. Please bug <@{self.program_owner}> if you think this is a mistake."
 
         if not self.ticket_reopen:
-            self.ticket_reopen = "hey hey! it looks like <@{helper_slack_id}> has reopened this post! someone'll be with you shortly, ty!"
+            self.ticket_reopen = "Hey! <@{helper_slack_id}> reopened this post. Someone will be with you shortly."
 
         return self
