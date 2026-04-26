@@ -22,6 +22,9 @@ if docker ps -a --format '{{.Names}}' | grep -q '^hh-postgres$'; then
       fi
       export DATABASE_URL="postgresql://postgres:postgres@localhost:5433/nephthys"
       echo "[dev-with-db] Using DATABASE_URL=${DATABASE_URL}"
+    else
+      export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nephthys"
+      echo "[dev-with-db] Using DATABASE_URL=${DATABASE_URL}"
     fi
   else
     echo "[dev-with-db] Postgres container 'hh-postgres' is already running."
