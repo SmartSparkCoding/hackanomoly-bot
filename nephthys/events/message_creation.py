@@ -182,7 +182,10 @@ async def handle_new_question(
     ):
         title = await generate_ticket_title(text)
 
-    # Category tags disabled
+    async with perf_timer(
+        "AI ticket category generation", TICKET_CATEGORY_GENERATION_DURATION
+    ):
+        category_tag_id = await generate_category_tag(text)
 
     user_facing_message_ts = user_facing_message["ts"]
     if not user_facing_message_ts:
@@ -204,11 +207,10 @@ async def handle_new_question(
             },
         }
 
-        # Category tags disabled
+        if category_tag_id:
+            ticket_data["categoryTag"] = {"connect": {"id": category_tag_id}}
 
         ticket = await env.db.ticket.create(ticket_data)
-
-        # Category tags disabled
 
     try:
         await client.reactions_add(
