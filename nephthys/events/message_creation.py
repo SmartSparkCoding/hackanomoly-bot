@@ -1,5 +1,6 @@
 import logging
 import random
+import re
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
@@ -39,6 +40,83 @@ TICKET_TEAM_TAG_GENERATION_DURATION = Histogram(
 )
 
 DUPLICATE_TICKET_WINDOW = timedelta(minutes=10)
+
+
+def _tokenize_for_similarity(text: str) -> set[str]:
+    words = re.findall(r"[a-z0-9]+", text.lower())
+    stop_words = {
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "to",
+        "for",
+        "of",
+        "in",
+        "on",
+        "is",
+        "it",
+        "this",
+        "that",
+        "i",
+        "my",
+        "me",
+        "you",
+        "your",
+        "help",
+        "please",
+    }
+    return {word for word in words if len(word) > 2 and word not in stop_words}
+
+
+async def is_related_ticket(existing_text: str, new_text: str) -> bool:
+    if env.ai_client:
+        try:
+            response = await env.ai_client.chat.completions.create(
+                model="google/gemini-3-flash-preview",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You classify whether two support requests are related to the same underlying issue. "
+                            "Reply with exactly one word: YES or NO."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "Request A:\n"
+                            f"{existing_text}\n\n"
+                            "Request B:\n"
+                            f"{new_text}\n\n"
+                            "Are these related to the same issue?"
+                        ),
+                    },
+                ],
+            )
+            answer = (
+                response.choices[0].message.content.strip().upper()
+                if response.choices and response.choices[0].message.content
+                else ""
+            )
+            if answer.startswith("YES"):
+                return True
+            if answer.startswith("NO"):
+                return False
+        except Exception as e:
+            logging.warning(f"Failed relatedness check for duplicate ticket logic: {e}")
+
+    existing_tokens = _tokenize_for_similarity(existing_text)
+    new_tokens = _tokenize_for_similarity(new_text)
+    if not existing_tokens or not new_tokens:
+        return False
+
+    overlap = existing_tokens.intersection(new_tokens)
+    union = existing_tokens.union(new_tokens)
+    jaccard = len(overlap) / len(union)
+
+    return len(overlap) >= 3 and jaccard >= 0.35
 
 
 async def find_recent_duplicate_ticket(db_user: User) -> Any | None:
@@ -121,7 +199,7 @@ async def handle_duplicate_question(
     summary = await summarize_ticket_thread(duplicate_ticket)
     main_ticket_link = f"<{get_question_message_link(duplicate_ticket)}|main ticket>"
     message_text = (
-        ":hackanomoly-transparent: I found an existing ticket from the same person in the last 10 minutes, so I’m closing this one as a duplicate.\n\n"
+        ":hackanomoly-transparent: I found an existing related ticket from the same person in the last 10 minutes, so I'm closing this one as a duplicate.\n\n"
         f"Main ticket: {main_ticket_link}\n"
         f"Quick summary: {summary}"
     )
@@ -264,7 +342,7 @@ async def handle_new_question(
             )
     assert db_user is not None
     duplicate_ticket = await find_recent_duplicate_ticket(db_user)
-    if duplicate_ticket:
+    if duplicate_ticket and await is_related_ticket(duplicate_ticket.description, text):
         await handle_duplicate_question(event, client, duplicate_ticket)
         return
 
