@@ -34,9 +34,8 @@ def get_maintainer_dm_modal():
                     "emoji": True,
                 },
                 "element": {
-                    "type": "plain_text_input",
+                    "type": "rich_text_input",
                     "action_id": "message",
-                    "multiline": True,
                 },
             },
         ],
