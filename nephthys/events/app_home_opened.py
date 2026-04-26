@@ -17,6 +17,7 @@ from nephthys.views.home.loading import get_loading_view
 from nephthys.views.home.maintainer_dm import get_maintainer_dm_view
 from nephthys.views.home.stats import get_stats_view
 from nephthys.views.home.team_tags import get_team_tags_view
+from nephthys.views.home.user_profiles import get_user_profiles_view
 
 DEFAULT_VIEW = "dashboard"
 
@@ -56,6 +57,8 @@ async def open_app_home(home_type: str, client: AsyncWebClient, user_id: str):
                     view = await get_dashboard_view(slack_user=user_id, db_user=user)
                 case "guide":
                     view = await get_guide_view(user)
+                case "user-profiles":
+                    view = await get_user_profiles_view(user)
                 case "assigned-tickets":
                     view = await get_assigned_tickets_view(user)
                 case "team-tags":

@@ -26,6 +26,8 @@ model User {
   slackId  String  @unique
   username String? @unique
   admin    Boolean @default(false)
+  ticketProfile          String?
+  ticketProfileUpdatedAt DateTime?
 
   openedTickets   Ticket[] @relation("OpenedTickets")
   closedTickets   Ticket[] @relation("ClosedTickets")

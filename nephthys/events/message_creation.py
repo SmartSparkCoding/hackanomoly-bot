@@ -119,6 +119,86 @@ async def is_related_ticket(existing_text: str, new_text: str) -> bool:
     return len(overlap) >= 3 and jaccard >= 0.35
 
 
+def _fallback_user_ticket_profile(descriptions: list[str]) -> str:
+    combined = " ".join(descriptions).lower()
+    keywords = {
+        "shipping": ["ship", "shipping", "cert", "certificate", "delivery"],
+        "identity": ["identity", "verify", "verification", "kyc"],
+        "fraud": ["fraud", "scam", "suspicious", "chargeback"],
+        "ai": ["ai", "model", "prompt", "response"],
+        "account": ["account", "login", "password", "access"],
+    }
+    counts = {
+        label: sum(combined.count(token) for token in tokens)
+        for label, tokens in keywords.items()
+    }
+    top = sorted(counts.items(), key=lambda item: item[1], reverse=True)[0][0]
+    if counts[top] == 0:
+        return "Usually opens support tickets across mixed topics and follows up when needed."
+    if top == "shipping":
+        return "Usually opens tickets about shipping or certification progress and queue status."
+    if top == "identity":
+        return "Usually opens tickets related to identity verification or account checks."
+    if top == "fraud":
+        return "Usually opens tickets related to suspicious activity and fraud concerns."
+    if top == "ai":
+        return "Usually opens tickets about AI behavior, responses, or prompt-related issues."
+    return "Usually opens tickets related to account access and support setup issues."
+
+
+async def update_user_ticket_profile(user: User, new_description: str) -> None:
+    recent_tickets = await env.db.ticket.find_many(
+        where={"openedById": user.id},
+        order={"createdAt": "desc"},
+    )
+    descriptions = [new_description]
+    for ticket in recent_tickets[:9]:
+        if ticket.description:
+            descriptions.append(ticket.description)
+
+    if env.ai_client:
+        try:
+            response = await env.ai_client.chat.completions.create(
+                model="google/gemini-3-flash-preview",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You summarize user support behavior. "
+                            "Return exactly one sentence describing what kinds of tickets this user usually opens. "
+                            "Be neutral, concise, and specific."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "Ticket descriptions from this user:\n"
+                        + "\n".join(f"- {d}" for d in descriptions[:10]),
+                    },
+                ],
+            )
+            profile = response.choices[0].message.content if response.choices else None
+            if profile:
+                sentence = profile.strip().replace("\n", " ")
+                await env.db.user.update(
+                    where={"id": user.id},
+                    data={
+                        "ticketProfile": sentence,
+                        "ticketProfileUpdatedAt": datetime.now(),
+                    },
+                )
+                return
+        except Exception as e:
+            logging.warning(f"Failed to generate user ticket profile for {user.id}: {e}")
+
+    await env.db.user.update(
+        where={"id": user.id},
+        data={
+            "ticketProfile": _fallback_user_ticket_profile(descriptions[:10]),
+            "ticketProfileUpdatedAt": datetime.now(),
+        },
+    )
+
+
 async def find_recent_duplicate_ticket(db_user: User) -> Any | None:
     return await env.db.ticket.find_first(
         where={
@@ -406,6 +486,8 @@ async def handle_new_question(
         }
 
         ticket = await env.db.ticket.create(ticket_data)
+
+    await update_user_ticket_profile(db_user, text)
 
     if ai_team_tags:
         await apply_team_tags(ticket.ticketTs, ai_team_tags, client)
