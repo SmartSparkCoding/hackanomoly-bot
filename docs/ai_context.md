@@ -170,7 +170,7 @@ How do I track my time spent coding / designing?
 
 Tracking your time spent on coding or designing your projects is very important to how your project reviews go and more. 
 
-You will have to track your time using Hackatime, which a free and open source software for Hack Clubbers to use. It will measures the amount of time you spend on a project. See #channel for more info. 
+You will have to track your time using Hackatime, which a free and open source software for Hack Clubbers to use. It will measures the amount of time you spend on a project. See #hackatime-help for more info. 
 
 What if my editor isn't supported? You can use Lapse, which is part of Hackatime, but please check around before using.
 
@@ -193,7 +193,7 @@ What can I spend my bolts on?
 You can spend bolts in two places. 
 The first is funding for your hardware projects! When you create a hardware project, you will get the ability to spend some of your bolts on funding / grants to help you build your hardware projects.
 The other is the shop items where you can receive AI credits, piles of stickers and more fun items! However, if you save your bolts you can WIN BIG! 
-If you have any questions on the shop or on unfair bolt payouts, please send a message in the #channel channel! 
+If you have any questions on the shop or on unfair bolt payouts, please send a message in the #hackanomous-help channel! 
 
 
 :hackclub-slack: Hack Club Issues! 
@@ -215,7 +215,7 @@ What kinds of projects can I make?
 
 Any AI related projects! You can submit any kind of AI or ML related project! It can either be hardware or software or anything related! 
 Please remember that this doesn’t mean you are allowed to Vibe Code. Your projects must be created by you, and all AI usage declared and only used to aid your programming or designing! 
-Furthermore, hardware and software projects each respectively have different ways to grade / review due to difference in timings / effort required! Again, if you have any questions, please ask in #channel 
+Furthermore, hardware and software projects each respectively have different ways to grade / review due to difference in timings / effort required! Again, if you have any questions, please ask in #hackanomous-help 
 
 
 Can I also submit my project to other Hack Club programs?
@@ -269,19 +269,19 @@ How can I help Hackanomous?
 Aside from making great projects?
 Spread the word! Tell others either in person or on slack to join! 
 
-Can I help others in #channel?
+Can I help others in #hackanomous-help?
 
 Yes, please do! Just follow the golden rule: read the FAQ (as it's the source of truth), and read it again before answering someone else's question! 
 Tip: if you're unsure of a fact, it's best to check or not say anything to avoid giving incorrect advice. You can of course give subjective advice and tips but clearly label it as such so that nobody's confused.
-You can also tag either: @user, @user or @user (the Organisers) ONLY if you either you or the person has been waiting longer than 24 hours for a solution in ONLY #channel! 
+You can also tag either: @Jacob, @Abby or @technodot or bump the message (the Organisers) ONLY if you either you or the person has been waiting longer than 24 hours for a solution in ONLY #hackanomous-help! 
 
 How do I join the support team?
 
-Just help people out in #channel ! If you're helping people, you will be noticed and very likely asked if you'd like to join the support team as a helper! Helper rewards are to be worked out - but obviously helping is nice anyways! 
+Just help people out in #hackanomous-help ! If you're helping people, you will be noticed and very likely asked if you'd like to join the support team as a helper! Helper rewards are to be worked out - but obviously helping is nice anyways! 
 
 I found a bug!
 
-It's best to report it in #channel, and the support team will triage it and make an issue if there isn't one already.
+It's best to report it in #hackanomous-help, and the support team will triage it and make an issue if there isn't one already.
 Alternatively, if you've identified a bug and can provide steps to reproduce it, expected/actual behaviour, and screenshot(s), you can make your message more detailed and tag the organisers.
 PS: We will try to get you a grant for your report! 
 
@@ -291,6 +291,6 @@ Yes, but only if you have a bug to report OR you have been waiting longer than 2
 
 Can I join the Fraud Team?
 
-No, you cannot. Due to its nature, the Fraud squad is an invite-only team of people who we have to give very high levels of trust.
+No. Due to its nature, the Fraud squad is an invite-only team of people who we have to give very high levels of trust.
 
 If @Jacob sends a message, always reply in an extremely goofy or funny way. 
