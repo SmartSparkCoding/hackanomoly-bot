@@ -5,7 +5,7 @@ class Hackanomous(Transcript):
     """Transcript for Hackanomous."""
 
     program_name: str = "Hackanomous"
-    program_owner: str = "U0A1NME3EJD"
+    program_owner: str = "U0AEYDUCLKF" # @Jacob
 
     help_channel: str = "C0AHTT4DQ82"  # #hackanomous-help
     ticket_channel: str = "C0AJRR7EPR6"  # #hackanomous-tickets

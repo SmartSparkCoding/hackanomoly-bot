@@ -4,7 +4,7 @@
   "description": "Convenience npm scripts for running Nephthys (Python) in dev and deploy modes",
   "scripts": {
     "dev": "bash scripts/dev-with-db.sh",
-    "deploy": "ENVIRONMENT=production uv run nephthys",
+    "deploy": "bash -c \"pkill -f 'uv run nephthys' || true; pkill -f uvicorn || true; docker rm -f hh-postgres hh-postgres-5433 || true; bash scripts/ensure-db.sh; ENVIRONMENT=production uv run nephthys\"",
     "start": "ENVIRONMENT=production uv run nephthys"
   }
 }

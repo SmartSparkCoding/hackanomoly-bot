@@ -45,27 +45,8 @@ else
   fi
 fi
 
-# Wait briefly for Postgres to accept connections
-echo "[dev-with-db] Waiting for Postgres to be ready..."
-DB_PORT="${DATABASE_URL##*:@localhost:}"
-DB_PORT="${DB_PORT%%/*}"
-DB_PORT="${DB_PORT:-5432}"
-for i in {1..20}; do
-  if nc -z localhost "${DB_PORT}" >/dev/null 2>&1; then
-    break
-  fi
-  sleep 1
-done
-
-echo "[dev-with-db] Generating Prisma client..."
-uv run prisma generate
-
-echo "[dev-with-db] Pushing Prisma schema..."
-uv run prisma db push || {
-  echo "[dev-with-db] WARNING: prisma db push failed (database may not be fully ready yet). Retrying once..."
-  sleep 2
-  uv run prisma db push
-}
+echo "[dev-with-db] Ensuring DB and schema, then starting app"
+bash scripts/ensure-db.sh
 
 echo "[dev-with-db] Starting app (uvicorn via script)..."
 uv run nephthys
