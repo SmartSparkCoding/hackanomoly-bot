@@ -9,10 +9,16 @@ from nephthys.views.home import APP_HOME_VIEWS
 from prisma.models import User
 
 
-def header_buttons(current_view: str):
+def _can_see_maintainer_tabs(user: User | None) -> bool:
+    return bool(user and user.slackId == env.slack_maintainer_id)
+
+
+def header_buttons(user: User | None, current_view: str):
     buttons = Actions()
 
     for view in APP_HOME_VIEWS:
+        if view.maintainer_only and not _can_see_maintainer_tabs(user):
+            continue
         style = Button.PRIMARY if view.id == current_view else None
         buttons.add_element(
             Button(
@@ -36,7 +42,7 @@ def get_header(user: User | None, current: str = "dashboard") -> list[dict]:
     """
     return [
         title_line().build(),
-        header_buttons(current).build(),
+        header_buttons(user, current).build(),
         {"type": "divider"},
     ]
 
@@ -47,6 +53,6 @@ def get_header_components(
     """Returns the app home header as blockkit components"""
     return [
         title_line(),
-        header_buttons(current),
+        header_buttons(user, current),
         Divider(),
     ]

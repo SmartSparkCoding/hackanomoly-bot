@@ -9,6 +9,8 @@ from slack_sdk.web.async_client import AsyncWebClient
 from nephthys.actions.assign_team_tag import assign_team_tag_callback
 from nephthys.actions.create_team_tag import create_team_tag_btn_callback
 from nephthys.actions.create_team_tag import create_team_tag_view_callback
+from nephthys.actions.maintainer_dm import maintainer_dm_btn_callback
+from nephthys.actions.maintainer_dm import maintainer_dm_view_callback
 from nephthys.actions.resolve import resolve
 from nephthys.actions.tag_subscribe import tag_subscribe_callback
 from nephthys.commands.dm_magic_link import dm_magic_link_cmd_callback
@@ -102,6 +104,20 @@ async def create_team_tag_view(
     ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient
 ):
     await create_team_tag_view_callback(ack, body, client)
+
+
+@app.action("open-maintainer-dm")
+async def open_maintainer_dm(
+    ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient
+):
+    await maintainer_dm_btn_callback(ack, body, client)
+
+
+@app.view("maintainer_dm")
+async def maintainer_dm_view(
+    ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient
+):
+    await maintainer_dm_view_callback(ack, body, client)
 
 
 @app.action("tag-subscribe")

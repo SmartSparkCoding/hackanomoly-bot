@@ -13,6 +13,7 @@ from nephthys.views.home.assigned import get_assigned_tickets_view
 from nephthys.views.home.dashboard import get_dashboard_view
 from nephthys.views.home.error import get_error_view
 from nephthys.views.home.loading import get_loading_view
+from nephthys.views.home.maintainer_dm import get_maintainer_dm_view
 from nephthys.views.home.stats import get_stats_view
 from nephthys.views.home.team_tags import get_team_tags_view
 
@@ -56,6 +57,13 @@ async def open_app_home(home_type: str, client: AsyncWebClient, user_id: str):
                     view = await get_assigned_tickets_view(user)
                 case "team-tags":
                     view = await get_team_tags_view(user)
+                case "maintainer-dm":
+                    if not user or user.slackId != env.slack_maintainer_id:
+                        view = get_error_view(
+                            "This tab is only available to the maintainer."
+                        )
+                    else:
+                        view = await get_maintainer_dm_view(user)
                 case "my-stats":
                     view = await get_stats_view(user)
                 case _:
