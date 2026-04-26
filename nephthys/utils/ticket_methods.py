@@ -19,15 +19,19 @@ async def delete_message(channel_id: str, message_ts: str):
         )
 
 
-async def reply_to_ticket(ticket: Ticket, client: AsyncWebClient, text: str) -> None:
+async def reply_to_ticket(
+    ticket: Ticket,
+    client: AsyncWebClient,
+    text: str,
+    blocks: list[dict] | None = None,
+) -> None:
     """Sends a user-facing message in the help thread and records it in the database"""
     channel = env.slack_help_channel
     thread_ts = ticket.msgTs
-    msg = await client.chat_postMessage(
-        channel=channel,
-        text=text,
-        thread_ts=thread_ts,
-    )
+    post_kwargs = {"channel": channel, "text": text, "thread_ts": thread_ts}
+    if blocks:
+        post_kwargs["blocks"] = blocks
+    msg = await client.chat_postMessage(**post_kwargs)
     msg_ts = msg["ts"]
     if not msg_ts:
         logging.error(f"Bot message has no ts: {msg}")

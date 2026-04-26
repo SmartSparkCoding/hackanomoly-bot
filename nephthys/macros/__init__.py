@@ -1,6 +1,7 @@
 from typing import Any
 
 from nephthys.macros.faq import FAQ
+from nephthys.macros.ai import AI
 from nephthys.macros.fraud import Fraud
 from nephthys.macros.hello_world import HelloWorld
 from nephthys.macros.identity import Identity
@@ -22,6 +23,7 @@ from prisma.models import User
 
 
 macro_list: list[type[Macro]] = [
+    AI,
     Resolve,
     HelloWorld,
     FAQ,
