@@ -45,4 +45,4 @@ async def create_team_tag_btn_callback(
         return
 
     view = get_create_team_tag_modal()
-    await client.views_open(trigger_id=trigger_id, view=view, user_id=user_id)
+    await client.views_open(trigger_id=trigger_id, view=view)
