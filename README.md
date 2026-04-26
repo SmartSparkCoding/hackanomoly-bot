@@ -4,18 +4,14 @@ Nephthys is the bot powering many support channels in the Hack Club Slack such a
 
 ## Features
 
-### Category tags
-
-Category tags are used to classify tickets into broader categories such as "Fulfillment", "Identity", or "Platform Issues". When a new ticket is created, AI analyzes the message content and automatically assigns the most relevant category tag.
-
-Helpers can reassign these tags in the private tickets channel if the AI suggestion is incorrect.
-
 ### Team tags
 
 Team tags let you tag tickets that are the responsibility of a specific group of people (or perhaps just one person). E.g. you could have tags for Fufillment, Hack Club Auth, Onboarding flow, etc.
 
 You can add team tags to tickets in the private tickets channel or with the macro `?tag <tag_name>`. This will DM the people who are specialised in responding to those issues and have it show up in their assigned tickets.
 You can assign yourself to get notified for specific tags on the app home
+
+When a new ticket is created, AI automatically assigns the most relevant team tag if one fits.
 
 ### Macros
 

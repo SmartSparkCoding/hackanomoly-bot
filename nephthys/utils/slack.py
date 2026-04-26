@@ -7,8 +7,6 @@ from slack_bolt.context.ack.async_ack import AsyncAck
 from slack_sdk.web.async_client import AsyncWebClient
 
 from nephthys.actions.assign_team_tag import assign_team_tag_callback
-from nephthys.actions.create_category_tag import create_category_tag_btn_callback
-from nephthys.actions.create_category_tag import create_category_tag_view_callback
 from nephthys.actions.create_team_tag import create_team_tag_btn_callback
 from nephthys.actions.create_team_tag import create_team_tag_view_callback
 from nephthys.actions.resolve import resolve
@@ -67,9 +65,6 @@ async def handle_team_tag_list_options(ack: AsyncAck, payload: dict):
     await ack(options=tags)
 
 
-# category tags disabled
-
-
 @app.event("app_home_opened")
 async def app_home_opened_handler(event: dict[str, Any], client: AsyncWebClient):
     await on_app_home_opened(event, client)
@@ -109,20 +104,6 @@ async def create_team_tag_view(
     await create_team_tag_view_callback(ack, body, client)
 
 
-@app.action("create-category-tag")
-async def create_category_tag(
-    ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient
-):
-    await create_category_tag_btn_callback(ack, body, client)
-
-
-@app.view("create_category_tag")
-async def create_category_tag_view(
-    ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient
-):
-    await create_category_tag_view_callback(ack, body, client)
-
-
 @app.action("tag-subscribe")
 async def tag_subscribe(ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient):
     await tag_subscribe_callback(ack, body, client)
@@ -132,9 +113,6 @@ async def tag_subscribe(ack: AsyncAck, body: Dict[str, Any], client: AsyncWebCli
 @app.action("team-tag-list")
 async def assign_team_tag(ack: AsyncAck, body: Dict[str, Any], client: AsyncWebClient):
     await assign_team_tag_callback(ack, body, client)
-
-
-# category tags disabled
 
 
 @app.command("/dm-magic-link")

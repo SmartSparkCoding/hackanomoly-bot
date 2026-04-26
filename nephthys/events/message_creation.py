@@ -1,6 +1,5 @@
 import logging
 import random
-import string
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -10,6 +9,7 @@ from prometheus_client import Histogram
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_client import AsyncWebClient
 
+from nephthys.actions.assign_team_tag import apply_team_tags
 from nephthys.events.message.send_backend_message import send_backend_message
 from nephthys.macros import run_macro
 from nephthys.utils.env import env
@@ -31,9 +31,9 @@ TICKET_TITLE_GENERATION_DURATION = Histogram(
 )
 
 
-TICKET_CATEGORY_GENERATION_DURATION = Histogram(
-    "nephthys_ticket_category_generation_duration_seconds",
-    "How long it takes to generate a category tag using AI",
+TICKET_TEAM_TAG_GENERATION_DURATION = Histogram(
+    "nephthys_ticket_team_tag_generation_duration_seconds",
+    "How long it takes to generate a team tag using AI",
 )
 
 
@@ -149,6 +149,11 @@ async def handle_new_question(
                 },
             )
 
+    async with perf_timer(
+        "AI ticket team tag generation", TICKET_TEAM_TAG_GENERATION_DURATION
+    ):
+        ai_team_tags = await generate_team_tags(text)
+
     async with perf_timer("Sending backend ticket message"):
         ticket_message = await send_backend_message(
             author_user_id=author_id,
@@ -156,6 +161,7 @@ async def handle_new_question(
             msg_ts=event["ts"],
             past_tickets=past_tickets,
             client=client,
+            current_team_tag_ids=[tag["value"] for tag in ai_team_tags],
             display_name=author.display_name(),
             profile_pic=author.profile_pic_512x() or "",
         )
@@ -182,11 +188,6 @@ async def handle_new_question(
     ):
         title = await generate_ticket_title(text)
 
-    async with perf_timer(
-        "AI ticket category generation", TICKET_CATEGORY_GENERATION_DURATION
-    ):
-        category_tag_id = await generate_category_tag(text)
-
     user_facing_message_ts = user_facing_message["ts"]
     if not user_facing_message_ts:
         logging.error(f"User-facing message has no ts: {user_facing_message}")
@@ -207,10 +208,10 @@ async def handle_new_question(
             },
         }
 
-        if category_tag_id:
-            ticket_data["categoryTag"] = {"connect": {"id": category_tag_id}}
-
         ticket = await env.db.ticket.create(ticket_data)
+
+    if ai_team_tags:
+        await apply_team_tags(ticket.ticketTs, ai_team_tags, client)
 
     try:
         await client.reactions_add(
@@ -379,17 +380,14 @@ async def generate_ticket_title(text: str):
     return title
 
 
-async def generate_category_tag(text: str) -> int | None:
-    category_tags = await env.db.categorytag.find_many()
+async def generate_team_tags(text: str) -> list[dict[str, Any]]:
+    team_tags = await env.db.tag.find_many()
 
-    if not category_tags:
-        return None
+    if not team_tags or not env.ai_client:
+        return []
 
-    tag_options = ", ".join([tag.name for tag in category_tags])
-    tag_map = {tag.name.lower(): tag for tag in category_tags}
-
-    if not env.ai_client:
-        return None
+    tag_options = ", ".join([tag.name for tag in team_tags])
+    tag_map = {tag.name.lower(): tag for tag in team_tags}
 
     model = "google/gemini-3-flash-preview"
     try:
@@ -399,8 +397,8 @@ async def generate_category_tag(text: str) -> int | None:
                 {
                     "role": "system",
                     "content": (
-                        "You are a helpful assistant that categorizes support tickets! "
-                        f"Choose the best tag from this list: [{tag_options}]. "
+                        "You are a helpful assistant that routes support tickets to the best team. "
+                        f"Choose the single best team tag from this list: [{tag_options}]. "
                         "Return ONLY the exact tag name. If none fit, return 'None'."
                     ),
                 },
@@ -411,22 +409,16 @@ async def generate_category_tag(text: str) -> int | None:
             ],
         )
     except OpenAIError as e:
-        await send_heartbeat(f"Failed to get AI response for tag generation: {e}")
-        return None
+        await send_heartbeat(f"Failed to get AI response for team tag generation: {e}")
+        return []
 
     if not (len(response.choices) and response.choices[0].message.content):
-        return None
+        return []
 
     suggested_tag_label = response.choices[0].message.content.strip()
-
-    suggested_clean = suggested_tag_label.strip(string.punctuation)
-
-    original_label = tag_map.get(suggested_clean.lower())
+    original_label = tag_map.get(suggested_tag_label.lower())
 
     if not original_label:
-        original_label = tag_map.get(suggested_tag_label.lower())
+        return []
 
-    if original_label:
-        return original_label.id
-
-    return None
+    return [{"name": original_label.name, "value": original_label.id}]

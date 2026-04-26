@@ -13,6 +13,5 @@ APP_HOME_VIEWS: list[View] = [
     View("Dashboard", "dashboard"),
     View("Assigned Tickets", "assigned-tickets"),
     View("Team Tags", "team-tags"),
-    View("Category Tags", "category-tags"),
     View("My Stats", "my-stats"),
 ]
