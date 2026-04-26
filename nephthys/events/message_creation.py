@@ -179,24 +179,40 @@ async def update_user_ticket_profile(user: User, new_description: str) -> None:
             profile = response.choices[0].message.content if response.choices else None
             if profile:
                 sentence = profile.strip().replace("\n", " ")
-                await env.db.user.update(
-                    where={"id": user.id},
-                    data={
-                        "ticketProfile": sentence,
-                        "ticketProfileUpdatedAt": datetime.now(),
-                    },
-                )
+                try:
+                    await env.db.user.update(
+                        where={"id": user.id},
+                        data={
+                            "ticketProfile": sentence,
+                            "ticketProfileUpdatedAt": datetime.now(),
+                        },
+                    )
+                except Exception as e:
+                    if "ticketProfile" in str(e):
+                        logging.warning(
+                            f"Skipped ticket profile update for user {user.id}; schema missing fields: {e}"
+                        )
+                        return
+                    raise
                 return
         except Exception as e:
             logging.warning(f"Failed to generate user ticket profile for {user.id}: {e}")
 
-    await env.db.user.update(
-        where={"id": user.id},
-        data={
-            "ticketProfile": _fallback_user_ticket_profile(descriptions[:10]),
-            "ticketProfileUpdatedAt": datetime.now(),
-        },
-    )
+    try:
+        await env.db.user.update(
+            where={"id": user.id},
+            data={
+                "ticketProfile": _fallback_user_ticket_profile(descriptions[:10]),
+                "ticketProfileUpdatedAt": datetime.now(),
+            },
+        )
+    except Exception as e:
+        if "ticketProfile" in str(e):
+            logging.warning(
+                f"Skipped fallback ticket profile update for user {user.id}; schema missing fields: {e}"
+            )
+            return
+        raise
 
 
 async def find_recent_duplicate_ticket(db_user: User) -> Any | None:
