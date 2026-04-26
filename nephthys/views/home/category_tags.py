@@ -6,6 +6,7 @@ from prisma.models import User
 
 async def get_category_tags_view(user: User | None):
     header = get_header(user, "category-tags")
+    is_admin = bool(user and user.admin)
 
     if not user or not user.helper:
         return error_screen(
@@ -17,27 +18,44 @@ async def get_category_tags_view(user: User | None):
     category_tags = await env.db.categorytag.find_many(include={"tickets": True})
 
     if not category_tags:
-        return {
-            "type": "home",
-            "blocks": [
-                *header,
-                {
-                    "type": "header",
-                    "text": {
-                        "type": "plain_text",
-                        "text": ":rac_info: Category Tags",
-                        "emoji": True,
-                    },
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": ":rac_info: Category Tags",
+                    "emoji": True,
                 },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": ":rac_nooo: no category tags yet.",
-                    },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":rac_nooo: no category tags yet.",
                 },
-            ],
-        }
+            },
+        ]
+
+        if is_admin:
+            blocks.append(
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "text": ":rac_cute: add a category tag?",
+                                "emoji": True,
+                            },
+                            "action_id": "create-category-tag",
+                            "style": "primary",
+                        }
+                    ],
+                }
+            )
+
+        return {"type": "home", "blocks": [*header, *blocks]}
 
     blocks = [
         {
@@ -57,6 +75,26 @@ async def get_category_tags_view(user: User | None):
         },
         {"type": "divider"},
     ]
+
+    if is_admin:
+        blocks.append(
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": ":rac_cute: add a category tag?",
+                            "emoji": True,
+                        },
+                        "action_id": "create-category-tag",
+                        "style": "primary",
+                    }
+                ],
+            }
+        )
+        blocks.append({"type": "divider"})
 
     for tag in category_tags:
         ticket_count = len(tag.tickets) if tag.tickets else 0
