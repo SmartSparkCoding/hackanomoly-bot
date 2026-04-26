@@ -45,7 +45,7 @@ async def send_fulfillment_reminder():
             include={"openedBy": True, "tagsOnTickets": {"include": {"tag": True}}},
         )
 
-        msg_header = f"oh hi <@{target_slack_id}>! i found some fulfillment tickets for you! :rac_cute:"
+        msg_header = f"Hey <@{target_slack_id}>, I found some fulfillment tickets for you. :hackanomoly-v1:"
 
         if not tickets:
             logging.info("No open fulfillment tickets found. Skipping Slack reminder.")
@@ -53,8 +53,8 @@ async def send_fulfillment_reminder():
 
         else:
             msg_lines = [
-                f":rac_shy: *tickets needing attention ({len(tickets)})*",
-                "here are the open tickets from the last 24 hours:",
+                f":hackanomoly-v1: *tickets needing attention ({len(tickets)})*",
+                "Here are the open tickets from the last 24 hours:",
             ]
 
             for i, ticket in enumerate(tickets):

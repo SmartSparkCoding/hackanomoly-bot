@@ -15,13 +15,13 @@ class Hackanomous(Transcript):
     identity_help_channel: str = "C092833JXKK"  # #identity-help
 
     first_ticket_create: str = f"""
-:hackanomoly-v1: Hey there (user), welcome to the Hackanomous help channel. While we wait for a human helper, a couple of quick things:
-• Take a look through <{faq_link}|*the FAQ*> – you may find a solution waiting there for you
+:hackanomoly-v1: Ah, hello there, fellow hack clubber! While we wait for a very nice human to come and help you out, I've been told to remind you to:
+• Take a look through <{faq_link}|*the FAQ*> - you may find a solution waiting there for you
 • If you have the answer to your question, hit that green button below!
 """
     ticket_create: str = f"""
 :hackanomoly-v1: Quick check-in while we wait for a helper:
-• Have a read of <{faq_link}|*the FAQ*> – it might have the answer you're looking for
+• Have a read of <{faq_link}|*the FAQ*> - it might have the answer you're looking for
 • Once your question is (hopefully) answered, hit the button below!
 """
     ticket_resolve: str = f"""

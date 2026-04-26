@@ -22,14 +22,14 @@ def slack_timestamp(dt: datetime, format: str = "date_short") -> str:
 
 async def tickets_awaiting_response_message(tickets: list[Ticket]) -> str:
     if not tickets:
-        return ":rac_woah: _btw, i looked for old unanswered tickets, but found none. well done team!_"
+        return ":hackanomoly-v1: _I looked for old unanswered tickets and found none. Nice work team!_"
 
     count = len(tickets)
     MAX_TICKETS = 5
 
     msg_lines = [
-        ":rac_shy: *tickets you could take a look at*",
-        "i found some older tickets that might be waiting for a response from someone...",
+        ":hackanomoly-v1: *tickets you could take a look at*",
+        "I found some older tickets that might be waiting for a response.",
     ]
     for i, ticket in enumerate(tickets[:MAX_TICKETS]):
         label = (
@@ -100,14 +100,15 @@ async def send_daily_stats():
         )
 
         msg = f"""
-um, um, hi there! hope i'm not disturbing you, but i just wanted to let you know that i've got some stats for you! :rac_cute:
+Hey there, I have some stats for you. :hackanomoly-v1:
 
 *:mc-clock: in the last 24 hours...* _(that's a day, right? right? that's a day, yeah ok)_
-:rac_woah: *{stats.new_tickets_total}* total tickets were opened and you managed to close *{stats.closed_today_from_today}* of them! congrats!! :D
-:rac_info: *{stats.assigned_today_in_progress}* tickets have been assigned to users, and *{stats.new_tickets_still_open}* are still open
-you managed to close a whopping *{stats.closed_today}* tickets in the last 24 hours, well done!
 
-*:rac_info: today's leaderboard*
+:hackanomoly-v1: *{stats.new_tickets_total}* total tickets were opened and you closed *{stats.closed_today_from_today}* of them.
+:hackanomoly-v1: *{stats.assigned_today_in_progress}* tickets have been assigned to users, and *{stats.new_tickets_still_open}* are still open.
+You closed *{stats.closed_today}* tickets in the last 24 hours. Nice work.
+
+*:hackanomoly-v1: today's leaderboard*
 {daily_leaderboard_str}
 
 {await tickets_awaiting_response_message(tickets_awaiting_response)}

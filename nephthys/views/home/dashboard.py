@@ -22,7 +22,7 @@ async def get_dashboard_view(slack_user: str, db_user: User | None):
     if not user_info:
         logging.error(f"Failed to fetch user={slack_user}: {user_info_response}")
         return get_error_view(
-            ":rac_freaking: oops, i couldn't find your info! try again in a bit?"
+            ":hackanomoly-v1: I could not find your info. Try again in a bit."
         )
     tz_string = user_info.get("tz")
     if not tz_string:
@@ -39,7 +39,7 @@ async def get_dashboard_view(slack_user: str, db_user: User | None):
     return Home(
         [
             *get_header_components(db_user, "dashboard"),
-            Header(":rac_graph: funny circle and line things"),
+            Header(":hackanomoly-v1: ticket overview"),
             pie_chart,
             *leaderboard,
         ]

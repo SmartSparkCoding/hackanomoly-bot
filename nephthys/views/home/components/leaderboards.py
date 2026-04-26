@@ -65,7 +65,7 @@ async def get_leaderboard_components():
                 f"Hang time: {avg_prev_day_hang_time_str}",
             )
         ),
-        Header(":rac_lfg: leaderboard"),
+        Header(":hackanomoly-v1: leaderboard"),
         Section()
         .add_field(Text(f"*:summer25: overall*\n{overall_leaderboard_str}"))
         .add_field(Text(f"*:mc-clock: past 24 hours*\n{prev_day_leaderboard_str}")),

@@ -14,8 +14,8 @@ async def get_assigned_tickets_view(user: User | None):
     if not user or not user.helper:
         return error_screen(
             header,
-            ":rac_info: you're not a helper!",
-            ":rac_believes_in_theory_about_green_lizards_and_space_lasers: only helpers can be assigned to tickets, so you have none - zero responsibility!",
+            ":hackanomoly-v1: you are not a helper.",
+            "Only helpers can be assigned to tickets, so there is nothing here for you yet.",
         )
 
     tickets = await env.db.ticket.find_many(
@@ -26,8 +26,8 @@ async def get_assigned_tickets_view(user: User | None):
     if not tickets:
         return error_screen(
             header,
-            ":rac_cute: no assigned tickets",
-            ":rac_believes_in_theory_about_green_lizards_and_space_lasers: you don't have any assigned tickets right now!",
+            ":hackanomoly-v1: no assigned tickets",
+            "You do not have any assigned tickets right now.",
         )
 
     ticket_blocks = []
@@ -48,7 +48,7 @@ async def get_assigned_tickets_view(user: User | None):
                     "type": "button",
                     "text": {
                         "type": "plain_text",
-                        "text": ":rac_info: view ticket",
+                        "text": ":hackanomoly-v1: view ticket",
                         "emoji": True,
                     },
                     "action_id": f"view-ticket-{ticket.msgTs}",
@@ -67,7 +67,7 @@ async def get_assigned_tickets_view(user: User | None):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":rac_cute: here are your assigned tickets <3",
+                        "text": ":hackanomoly-v1: here are your assigned tickets",
                     "emoji": True,
                 },
             },

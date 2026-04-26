@@ -19,7 +19,7 @@ async def get_stats_view(user: User | None):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": ":rac_cute: weh im just a silly raccoon, did you expect me to have stats :rac_ded: i don't even have a job >:(",
+                    "text": ":hackanomoly-v1: I do not have personal stats to show, but I can still help you find support data.",
                 },
             },
         ],

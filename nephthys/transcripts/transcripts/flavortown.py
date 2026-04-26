@@ -16,12 +16,12 @@ class Flavortown(Transcript):
 
     first_ticket_create: str = f"""
 :hackanomoly-v1: Hey there (user), welcome to the support channel. While we wait for a human helper, a couple of quick things:
-• Take a look through <{faq_link}|*the FAQ*> – you may find a solution waiting there
+• Take a look through <{faq_link}|*the FAQ*> - you may find a solution waiting there
 • Once your question has been answered, hit that green button below!
 """
     ticket_create: str = f"""
 :hackanomoly-v1: Quick check-in while we wait for a helper:
-• Have a read of <{faq_link}|*the FAQ*> – it might have the answer you're looking for
+• Have a read of <{faq_link}|*the FAQ*> - it might have the answer you're looking for
 • Once your question is answered, hit the button below!
 """
     ticket_resolve: str = f"""

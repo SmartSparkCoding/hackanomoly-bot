@@ -15,7 +15,7 @@ When a new ticket is created, AI automatically assigns the most relevant team ta
 
 ### Macros
 
-Sometimes it’s nice to be able to do things quickly... Here’s where macros come in! Send one of the following messages in an open thread and something will happen
+Sometimes it's nice to be able to do things quickly... Here's where macros come in! Send one of the following messages in an open thread and something will happen
 
 - `?resolve` - the ticket gets closed. Equivalent of hitting the resolve button
 - `?reopen` - reopen a closed ticket

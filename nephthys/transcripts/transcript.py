@@ -125,7 +125,7 @@ class Transcript(BaseModel):
     )
 
     dm_magic_link_message: str = Field(
-        default=":hackanomoly-v1: hey there! here’s a magic link to get you unstuck.\n{magic_link}",
+        default=":hackanomoly-v1: hey there! here's a magic link to get you unstuck.\n{magic_link}",
         description="Magic link DM message",
     )
 
@@ -138,11 +138,11 @@ class Transcript(BaseModel):
         """Set default values for messages that reference other fields"""
         if not self.first_ticket_create:
             self.first_ticket_create = f"""Hey (user), welcome in. This looks like your first ticket here. Someone should be with you shortly, but while you wait, check the FAQ <{self.faq_link}|here> since it covers a lot of common questions.
-If you’re all set, use the button below to mark this as resolved.
+If you're all set, use the button below to mark this as resolved.
     """
 
         if not self.ticket_create:
-            self.ticket_create = f"""Someone should be with you soon. In the meantime, check the FAQ <{self.faq_link}|here> to make sure your question hasn’t already been answered. If it has, use the button below to mark it as resolved.
+            self.ticket_create = f"""Someone should be with you soon. In the meantime, check the FAQ <{self.faq_link}|here> to make sure your question hasn't already been answered. If it has, use the button below to mark it as resolved.
     """
 
         if not self.ticket_resolve:
@@ -160,13 +160,13 @@ If you’re all set, use the button below to mark this as resolved.
             self.identity_macro = f"Hey (user), please ask identity verification questions in <#{self.identity_help_channel}>. :hackanomoly-v1:\n\nThat keeps the verification team organized."
 
         if not self.not_allowed_channel:
-            self.not_allowed_channel = f"Hey, it looks like you’re not supposed to be in that channel. If that’s wrong, please talk to <@{self.program_owner}>."
+            self.not_allowed_channel = f"Hey, it looks like you're not supposed to be in that channel. If that's wrong, please talk to <@{self.program_owner}>."
 
         if not self.dm_magic_link_error:
             self.dm_magic_link_error = f":hackanomoly-v1: something went wrong while generating the magic link. Please bug <@{self.program_owner}> (status: {{status}})."
 
         if not self.dm_magic_link_no_permission:
-            self.dm_magic_link_no_permission = f":hackanomoly-v1: you don’t have permission to use this command. Please bug <@{self.program_owner}> if you think this is a mistake."
+            self.dm_magic_link_no_permission = f":hackanomoly-v1: you don't have permission to use this command. Please bug <@{self.program_owner}> if you think this is a mistake."
 
         if not self.ticket_reopen:
             self.ticket_reopen = "Hey! <@{helper_slack_id}> reopened this post. Someone will be with you shortly."

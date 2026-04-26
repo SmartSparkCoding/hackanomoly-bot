@@ -14,22 +14,22 @@ class Construct(Transcript):
     faq_link: str = "https://hackclub.slack.com/docs/T0266FRGM/F09Q2DS061J"
     identity_help_channel: str = "C092833JXKK"  # #identity-help
     first_ticket_create: str = f"""
-Hey! Your support ticket is in the queue — someone from the team will pick it up soon.
-While we wait:
-• Try the FAQ: <{faq_link}|the FAQ> — sometimes the answer's hiding there.
+Hey! Your support ticket is in the queue. Someone from the team will pick it up soon.
+While you wait:
+• Try the FAQ: <{faq_link}|the FAQ> in case the answer is already there.
 • When your issue is fixed, tap the green Resolve button to close the ticket.
-Thanks for the patience — we'll be with you shortly!
+Thanks for the patience. We will be with you shortly.
 """
     ticket_create: str = f"""
-Hello! Your ticket has been recorded and assigned a spot in the queue.
+Hello! Your ticket has been recorded and placed in the queue.
 Quick checklist:
-• Check <{faq_link}|the FAQ> — it might save a step.
-• If your issue gets fixed, please press the Resolve button so we know it's done.
+• Check <{faq_link}|the FAQ> in case it saves you a step.
+• If your issue gets fixed, press the Resolve button so we know it is done.
 Someone from the team will reply shortly with next steps.
 """
     ticket_resolve: str = f"""
-Nice — this ticket was marked resolved by <@{{user_id}}>.
-If you need additional changes or the issue returns, send a message in <#{help_channel}> and we'll take another look.
+Nice. This ticket was marked resolved by <@{{user_id}}>.
+If you need additional changes or the issue returns, send a message in <#{help_channel}> and we will take another look.
 """
 
-    not_allowed_channel: str = f"Oops — you don't have permission for that channel. If you think this is wrong, ask <@{program_owner}> to check your access."
+    not_allowed_channel: str = f"Oops. You do not have permission for that channel. If you think this is wrong, ask <@{program_owner}> to check your access."
