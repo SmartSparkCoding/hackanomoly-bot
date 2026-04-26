@@ -1,6 +1,22 @@
+from pathlib import Path
+
 from nephthys.macros.types import Macro
 from nephthys.utils.env import env
 from nephthys.utils.ticket_methods import reply_to_ticket
+
+
+AI_CONTEXT_PATH = Path(__file__).resolve().parents[2] / "docs" / "ai_context.md"
+
+
+def load_ai_context() -> str:
+    if not AI_CONTEXT_PATH.exists():
+        return ""
+
+    context = AI_CONTEXT_PATH.read_text(encoding="utf-8").strip()
+    if not context:
+        return ""
+
+    return context
 
 
 class AI(Macro):
@@ -23,6 +39,7 @@ class AI(Macro):
             ts=ticket.msgTs,
         )
         messages = thread_messages.get("messages", [])
+        extra_context = load_ai_context()
 
         context_lines = [
             "Main message:",
@@ -38,6 +55,13 @@ class AI(Macro):
             if not text:
                 continue
             context_lines.append(f"<@{user}>: {text}")
+
+        if extra_context:
+            context_lines.extend([
+                "",
+                "Extra context:",
+                extra_context,
+            ])
 
         prompt = "\n".join(context_lines)
         try:
