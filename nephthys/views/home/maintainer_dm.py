@@ -15,7 +15,7 @@ async def get_maintainer_dm_view(user: User | None) -> dict:
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": ":hackanomoly-v1: this tab is only for the maintainer.",
+                        "text": ":hackanomoly-transparent: this tab is only for the maintainer. privacy respected, drama minimized.",
                     },
                 },
             ],
@@ -29,7 +29,7 @@ async def get_maintainer_dm_view(user: User | None) -> dict:
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":hackanomoly-v1: maintainer dm tool",
+                    "text": ":hackanomoly-transparent: maintainer dm tool",
                     "emoji": True,
                 },
             },
@@ -47,7 +47,7 @@ async def get_maintainer_dm_view(user: User | None) -> dict:
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": ":hackanomoly-v1: compose dm",
+                                "text": ":hackanomoly-transparent: compose dm",
                             "emoji": True,
                         },
                         "action_id": "open-maintainer-dm",

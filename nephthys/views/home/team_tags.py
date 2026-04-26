@@ -18,7 +18,7 @@ async def get_team_tags_view(user: User | None) -> dict:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                        "text": f":hackanomoly-v1: no team tags found{', but you can make one below' if is_admin else ''}",
+                        "text": f":hackanomoly-transparent: no team tags found{', but you can make one below if you feel like inventing a new flavor of responsibility' if is_admin else ''}",
                 },
             }
         )
@@ -42,14 +42,14 @@ async def get_team_tags_view(user: User | None) -> dict:
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*{tag.name}* - {''.join(stringified_subs) if stringified_subs else ':hackanomoly-v1: no subscriptions'}",
+                    "text": f"*{tag.name}* - {''.join(stringified_subs) if stringified_subs else ':hackanomoly-transparent: no subscriptions'}",
                 },
                 "accessory": (
                     {
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": f":hackanomoly-v1: {'subscribe' if user.id not in subs else 'unsubscribe'}",
+                            "text": f":hackanomoly-transparent: {'subscribe' if user.id not in subs else 'unsubscribe'}",
                             "emoji": True,
                         },
                         "action_id": "tag-subscribe",
@@ -70,7 +70,7 @@ async def get_team_tags_view(user: User | None) -> dict:
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": ":hackanomoly-v1: Manage Team Tags",
+                    "text": ":hackanomoly-transparent: Manage Team Tags",
                     "emoji": True,
                 },
             },
@@ -79,12 +79,12 @@ async def get_team_tags_view(user: User | None) -> dict:
                 "text": {
                     "type": "mrkdwn",
                         "text": (
-                            ":hackanomoly-v1: you can manage tags and subscriptions here"
+                            ":hackanomoly-transparent: you can manage tags and subscriptions here"
                             if is_admin
                             else (
-                                ":hackanomoly-v1: you can manage your subscriptions here"
+                                ":hackanomoly-transparent: you can manage your subscriptions here"
                                 if is_helper
-                                else ":hackanomoly-v1: you can only view team tags"
+                                else ":hackanomoly-transparent: you can only view team tags"
                             )
                         ),
                 },
@@ -103,7 +103,7 @@ async def get_team_tags_view(user: User | None) -> dict:
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": ":hackanomoly-v1: add a tag?",
+                            "text": ":hackanomoly-transparent: add a tag?",
                             "emoji": True,
                         },
                         "action_id": "create-team-tag",

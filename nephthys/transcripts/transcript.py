@@ -74,7 +74,7 @@ class Transcript(BaseModel):
     )
 
     thread_broadcast_delete: str = Field(
-        default="hey! please keep your messages *all in one thread* to make it easier to read! i've gone ahead and removed that message from the channel for ya :D",
+        default="hey! i moved that message back into its natural habitat: *the thread*. please keep things there so the channel doesn't start looking like a raccoon got into the keyboard.",
     )
 
     faq_macro: str = Field(
@@ -82,7 +82,7 @@ class Transcript(BaseModel):
     )
 
     fraud_macro: str = Field(
-        default="Hey (user)! Please send any fraud-related questions to <@U091HC53CE8>. :hackanomoly-v1:\n\nThat keeps your case confidential and makes it easier for the fraud team to track.",
+        default="Hey (user)! Please send any fraud-related questions to <@U091HC53CE8>. :hackanomoly-transparent:\n\nThat keeps your case confidential and saves the fraud team from having to play detective with vibes.",
         description="Message to be sent when the fraud macro is used",
     )
 
@@ -137,38 +137,38 @@ class Transcript(BaseModel):
     def set_default_messages(self):
         """Set default values for messages that reference other fields"""
         if not self.first_ticket_create:
-            self.first_ticket_create = f"""Hey (user), welcome in. This looks like your first ticket here. Someone should be with you shortly, but while you wait, check the FAQ <{self.faq_link}|here> since it covers a lot of common questions.
-If you're all set, use the button below to mark this as resolved.
+            self.first_ticket_create = f"""Hey (user), welcome in. This looks like your first ticket here, which is either exciting or mildly suspicious. Someone should be with you shortly, but while you wait, check the FAQ <{self.faq_link}|here> since it covers a lot of common questions.
+If you're all set, use the button below to mark this as resolved and let the queue breathe.
     """
 
         if not self.ticket_create:
-            self.ticket_create = f"""Someone should be with you soon. In the meantime, check the FAQ <{self.faq_link}|here> to make sure your question hasn't already been answered. If it has, use the button below to mark it as resolved.
+            self.ticket_create = f"""Someone should be with you soon. In the meantime, check the FAQ <{self.faq_link}|here> to make sure your question hasn't already been answered by the ancient support oracle. If it has, use the button below to mark it as resolved.
     """
 
         if not self.ticket_resolve:
-            self.ticket_resolve = f"""This post was marked as resolved by <@{{user_id}}>. If you need anything else, make a new post in <#{self.help_channel}> and a human helper will jump in.
+            self.ticket_resolve = f"""This post was marked as resolved by <@{{user_id}}>. If you need anything else, make a new post in <#{self.help_channel}> and a human helper will re-enter the chat like they were never gone.
     """
 
         if not self.ticket_resolve_stale:
-            self.ticket_resolve_stale = f""":hackanomoly-v1: this post is a bit old. If you still need help, please make a new post in <#{self.help_channel}> and a helper will take a look.
+            self.ticket_resolve_stale = f""":hackanomoly-transparent: this post is a bit old. If you still need help, please make a new post in <#{self.help_channel}> and a helper will take a look before the cobwebs file a complaint.
         """
 
         if not self.faq_macro:
-            self.faq_macro = f"Hey (user), this question is already covered in the FAQ I sent earlier. Please take a look. :hackanomoly-v1:\n\n<{self.faq_link}|here it is again>"
+            self.faq_macro = f"Hey (user), this question is already covered in the FAQ I sent earlier. Please take a look before I start reciting it by memory. :hackanomoly-transparent:\n\n<{self.faq_link}|here it is again>"
 
         if not self.identity_macro:
-            self.identity_macro = f"Hey (user), please ask identity verification questions in <#{self.identity_help_channel}>. :hackanomoly-v1:\n\nThat keeps the verification team organized."
+            self.identity_macro = f"Hey (user), please ask identity verification questions in <#{self.identity_help_channel}>. :hackanomoly-transparent:\n\nThat keeps the verification team organized and prevents me from trying to do paperwork with sarcasm."
 
         if not self.not_allowed_channel:
-            self.not_allowed_channel = f"Hey, it looks like you're not supposed to be in that channel. If that's wrong, please talk to <@{self.program_owner}>."
+            self.not_allowed_channel = f"Hey, it looks like you're not supposed to be in that channel. If that's wrong, please talk to <@{self.program_owner}> and we can sort out the administrative folklore."
 
         if not self.dm_magic_link_error:
-            self.dm_magic_link_error = f":hackanomoly-v1: something went wrong while generating the magic link. Please bug <@{self.program_owner}> (status: {{status}})."
+            self.dm_magic_link_error = f":hackanomoly-transparent: something went wrong while generating the magic link. Please bug <@{self.program_owner}> (status: {{status}})."
 
         if not self.dm_magic_link_no_permission:
-            self.dm_magic_link_no_permission = f":hackanomoly-v1: you don't have permission to use this command. Please bug <@{self.program_owner}> if you think this is a mistake."
+            self.dm_magic_link_no_permission = f":hackanomoly-transparent: you don't have permission to use this command. Please bug <@{self.program_owner}> if you think this is a mistake or if the universe is testing us."
 
         if not self.ticket_reopen:
-            self.ticket_reopen = "Hey! <@{helper_slack_id}> reopened this post. Someone will be with you shortly."
+            self.ticket_reopen = "Hey! <@{helper_slack_id}> reopened this post. Someone will be with you shortly, which is great because this thread was getting ideas."
 
         return self

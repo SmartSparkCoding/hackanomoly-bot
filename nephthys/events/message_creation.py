@@ -291,13 +291,13 @@ async def send_user_facing_message(
 async def on_app_mention(event: Dict[str, Any], client: AsyncWebClient):
     """Handle the bot mention easter egg."""
     quotes = [
-        "I'm not a bot, I'm just a bunch of very unorganized code :pf:",
-        "Error 404: Funny response not found. Just kidding, I'm hilarious",
-        "Did you know that #hackanomous is a YSWS by Jacob? :rohanpet: ",
-        "The random server in germany which hosts me can run 24/7 without any downtime (hopefully :disappointed:",
-        "If I have a a ping for every time I was mentioned, I'd have... uhh well, a lot of pings :why:",
-        "My hobbies include processing events and daydreaming about uhh idk :idk:",
-        "I'm not lazy, I'm just on energy-saving mode :good-night: :hehee: /hj",
+        "I'm not a bot, I'm a collection of opinions with uptime. :pf:",
+        "Error 404: funny response not found. kidding, i'm the funny response. :hackanomoly-transparent:",
+        "Did you know that #hackanomous is a YSWS by Jacob? i did. i also know this because i am nosy. :rohanpet:",
+        "The server in germany keeps pretending to be subtle, which is honestly bold. :disappointed:",
+        "If I had a ping for every time I was mentioned, I'd have... enough data to become insufferable. :why:",
+        "My hobbies include processing events and making this look effortless. :idk:",
+        "I'm not lazy, I'm just running in dramatic power-saving mode. :good-night: :hehee: /hj",
     ]
     await client.chat_postMessage(
         channel=event["channel"],

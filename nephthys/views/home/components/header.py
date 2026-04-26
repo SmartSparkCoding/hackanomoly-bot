@@ -32,7 +32,7 @@ def header_buttons(user: User | None, current_view: str):
 
 
 def title_line():
-    return Header(f":hackanomoly-v1: {env.app_title}")
+    return Header(f":hackanomoly-transparent: {env.app_title}")
 
 
 def get_header(user: User | None, current: str = "dashboard") -> list[dict]:

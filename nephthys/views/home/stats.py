@@ -19,7 +19,7 @@ async def get_stats_view(user: User | None):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": ":hackanomoly-v1: I do not have personal stats to show, but I can still help you find support data.",
+                    "text": ":hackanomoly-transparent: I do not have personal stats to show, but I can still help you find support data. I am, tragically, all business.",
                 },
             },
         ],

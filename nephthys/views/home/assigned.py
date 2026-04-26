@@ -14,7 +14,7 @@ async def get_assigned_tickets_view(user: User | None):
     if not user or not user.helper:
         return error_screen(
             header,
-            ":hackanomoly-v1: you are not a helper.",
+            ":hackanomoly-transparent: you are not a helper, which is a setup problem rather than a personality problem.",
             "Only helpers can be assigned to tickets, so there is nothing here for you yet.",
         )
 
@@ -26,8 +26,8 @@ async def get_assigned_tickets_view(user: User | None):
     if not tickets:
         return error_screen(
             header,
-            ":hackanomoly-v1: no assigned tickets",
-            "You do not have any assigned tickets right now.",
+            ":hackanomoly-transparent: no assigned tickets",
+            "You do not have any assigned tickets right now. The queue is, for once, behaving itself.",
         )
 
     ticket_blocks = []
@@ -67,7 +67,7 @@ async def get_assigned_tickets_view(user: User | None):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                        "text": ":hackanomoly-v1: here are your assigned tickets",
+                        "text": ":hackanomoly-transparent: here are your assigned tickets",
                     "emoji": True,
                 },
             },

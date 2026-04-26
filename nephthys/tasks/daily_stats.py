@@ -22,14 +22,14 @@ def slack_timestamp(dt: datetime, format: str = "date_short") -> str:
 
 async def tickets_awaiting_response_message(tickets: list[Ticket]) -> str:
     if not tickets:
-        return ":hackanomoly-v1: _I looked for old unanswered tickets and found none. Nice work team!_"
+        return ":hackanomoly-transparent: _I looked for old unanswered tickets and found none. Excellent, the queue has briefly achieved enlightenment._"
 
     count = len(tickets)
     MAX_TICKETS = 5
 
     msg_lines = [
-        ":hackanomoly-v1: *tickets you could take a look at*",
-        "I found some older tickets that might be waiting for a response.",
+        ":hackanomoly-transparent: *tickets you could take a look at*",
+        "I found some older tickets that might be waiting for a response. They have been patient, which is frankly rude of them.",
     ]
     for i, ticket in enumerate(tickets[:MAX_TICKETS]):
         label = (
@@ -100,15 +100,15 @@ async def send_daily_stats():
         )
 
         msg = f"""
-Hey there, I have some stats for you. :hackanomoly-v1:
+    Hey there, I have some stats for you. :hackanomoly-transparent:
 
 *:mc-clock: in the last 24 hours...* _(that's a day, right? right? that's a day, yeah ok)_
 
-:hackanomoly-v1: *{stats.new_tickets_total}* total tickets were opened and you closed *{stats.closed_today_from_today}* of them.
-:hackanomoly-v1: *{stats.assigned_today_in_progress}* tickets have been assigned to users, and *{stats.new_tickets_still_open}* are still open.
-You closed *{stats.closed_today}* tickets in the last 24 hours. Nice work.
+:hackanomoly-transparent: *{stats.new_tickets_total}* total tickets were opened and you closed *{stats.closed_today_from_today}* of them.
+:hackanomoly-transparent: *{stats.assigned_today_in_progress}* tickets have been assigned to users, and *{stats.new_tickets_still_open}* are still open.
+You closed *{stats.closed_today}* tickets in the last 24 hours. Nice work, professional queue tamer.
 
-*:hackanomoly-v1: today's leaderboard*
+*:hackanomoly-transparent: today's leaderboard*
 {daily_leaderboard_str}
 
 {await tickets_awaiting_response_message(tickets_awaiting_response)}

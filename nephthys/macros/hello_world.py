@@ -17,7 +17,7 @@ class HelloWorld(Macro):
             or user_info["user"]["name"]
         )
         await reply_to_ticket(
-            text=f"Hey, {name}! I'm Hackanomoly :hackanomoly-v1:. Say hi to Orpheus for me, would you?",
+            text=f"Hey, {name}! I'm Hackanomoly :hackanomoly-transparent:. Say hi to Orpheus for me, would you?",
             ticket=ticket,
             client=env.slack_client,
         )
