@@ -12,6 +12,7 @@ class View:
 
 APP_HOME_VIEWS: list[View] = [
     View("Dashboard", "dashboard"),
+    View("Guide", "guide"),
     View("Assigned Tickets", "assigned-tickets"),
     View("Team Tags", "team-tags"),
     View("DM User", "maintainer-dm", maintainer_only=True),
