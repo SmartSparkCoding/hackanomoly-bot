@@ -1,6 +1,7 @@
 import logging
 import random
 from datetime import datetime
+from datetime import timedelta
 from typing import Any
 from typing import Dict
 
@@ -17,6 +18,7 @@ from nephthys.utils.logging import send_heartbeat
 from nephthys.utils.performance import perf_timer
 from nephthys.utils.slack_user import get_user_profile
 from nephthys.utils.ticket_methods import delete_and_clean_up_ticket
+from nephthys.utils.ticket_methods import get_question_message_link
 from prisma.enums import TicketStatus
 from prisma.enums import UserType
 from prisma.models import User
@@ -35,6 +37,118 @@ TICKET_TEAM_TAG_GENERATION_DURATION = Histogram(
     "nephthys_ticket_team_tag_generation_duration_seconds",
     "How long it takes to generate a team tag using AI",
 )
+
+DUPLICATE_TICKET_WINDOW = timedelta(minutes=10)
+
+
+async def find_recent_duplicate_ticket(db_user: User) -> Any | None:
+    return await env.db.ticket.find_first(
+        where={
+            "openedById": db_user.id,
+            "createdAt": {"gte": datetime.now() - DUPLICATE_TICKET_WINDOW},
+        },
+        order={"createdAt": "desc"},
+        include={"openedBy": True},
+    )
+
+
+def _format_thread_text(message: dict) -> str:
+    user = message.get("user", "unknown")
+    text = message.get("text", "")
+    return f"<@{user}>: {text}" if text else ""
+
+
+async def summarize_ticket_thread(ticket: Any) -> str:
+    try:
+        thread_messages = await env.slack_client.conversations_replies(
+            channel=env.slack_help_channel,
+            ts=ticket.msgTs,
+        )
+    except SlackApiError as e:
+        logging.warning(
+            f"Failed to fetch thread replies for duplicate summary on ts={ticket.msgTs}: {e.response.get('error')}"
+        )
+        thread_messages = {"messages": []}
+
+    messages = thread_messages.get("messages", [])
+    thread_lines = [
+        _format_thread_text(message)
+        for message in messages
+        if message.get("ts") != ticket.msgTs and _format_thread_text(message)
+    ]
+
+    if not thread_lines:
+        return "No updates yet beyond the original message."
+
+    if env.ai_client:
+        try:
+            response = await env.ai_client.chat.completions.create(
+                model="google/gemini-3-flash-preview",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You summarize support tickets for a Slack bot. "
+                            "Write one or two short sentences. "
+                            "Focus on the main issue and the most important progress so far. "
+                            "Return only the summary text."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": "Ticket opening message:\n"
+                        f"{ticket.description}\n\n"
+                        "Thread updates:\n"
+                        + "\n".join(thread_lines[-8:]),
+                    },
+                ],
+            )
+            summary = response.choices[0].message.content if response.choices else None
+            if summary:
+                return summary.strip()
+        except Exception as e:
+            logging.warning(
+                f"Failed to summarize duplicate ticket thread ts={ticket.msgTs}: {e}"
+            )
+
+    recent_lines = thread_lines[-3:]
+    return "; ".join(recent_lines)
+
+
+async def handle_duplicate_question(
+    event: Dict[str, Any], client: AsyncWebClient, duplicate_ticket: Any
+):
+    summary = await summarize_ticket_thread(duplicate_ticket)
+    main_ticket_link = f"<{get_question_message_link(duplicate_ticket)}|main ticket>"
+    message_text = (
+        ":hackanomoly-transparent: I found an existing ticket from the same person in the last 10 minutes, so I’m closing this one as a duplicate.\n\n"
+        f"Main ticket: {main_ticket_link}\n"
+        f"Quick summary: {summary}"
+    )
+
+    await client.chat_postMessage(
+        channel=event["channel"],
+        thread_ts=event["ts"],
+        text=message_text,
+        blocks=[
+            {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": message_text},
+            }
+        ],
+    )
+
+    try:
+        await client.reactions_add(
+            channel=event["channel"],
+            name="white_check_mark",
+            timestamp=event["ts"],
+        )
+    except SlackApiError as e:
+        if e.response.get("error") != "already_reacted":
+            logging.warning(
+                f"Failed to add duplicate-close reaction for ts={event['ts']}: {e.response.get('error')}"
+            )
 
 
 async def handle_message_sent_to_channel(event: Dict[str, Any], client: AsyncWebClient):
@@ -148,6 +262,11 @@ async def handle_new_question(
                     "update": {"slackId": author_id, "username": username},
                 },
             )
+    assert db_user is not None
+    duplicate_ticket = await find_recent_duplicate_ticket(db_user)
+    if duplicate_ticket:
+        await handle_duplicate_question(event, client, duplicate_ticket)
+        return
 
     async with perf_timer(
         "AI ticket team tag generation", TICKET_TEAM_TAG_GENERATION_DURATION
