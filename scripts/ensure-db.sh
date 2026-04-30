@@ -55,8 +55,16 @@ for i in {1..20}; do
   sleep 1
 done
 
+generate_prisma_client() {
+  CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma generate
+}
+
 echo "[ensure-db] Generating Prisma client..."
-CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma generate
+if ! generate_prisma_client; then
+  echo "[ensure-db] WARNING: prisma generate failed; clearing Prisma cache and retrying once..."
+  rm -rf "${HOME}/.cache/prisma-python"
+  generate_prisma_client
+fi
 
 echo "[ensure-db] Pushing Prisma schema..."
 CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma db push --skip-generate || {
