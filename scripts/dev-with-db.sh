@@ -46,6 +46,8 @@ else
 fi
 
 echo "[dev-with-db] Ensuring DB and schema, then starting app"
+echo "[dev-with-db] Syncing Python dependencies..."
+uv sync --frozen
 bash scripts/ensure-db.sh
 
 echo "[dev-with-db] Starting app (uvicorn via script)..."
