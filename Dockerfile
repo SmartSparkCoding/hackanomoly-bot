@@ -15,7 +15,8 @@ EXPOSE 3000
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-RUN prisma db push
+RUN CI=1 PRISMA_DISABLE_TELEMETRY=1 prisma generate
+RUN CI=1 PRISMA_DISABLE_TELEMETRY=1 prisma db push --skip-generate
 
 CMD ["nephthys"]
 

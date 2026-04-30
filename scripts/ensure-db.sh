@@ -56,13 +56,13 @@ for i in {1..20}; do
 done
 
 echo "[ensure-db] Generating Prisma client..."
-uv run prisma generate
+CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma generate
 
 echo "[ensure-db] Pushing Prisma schema..."
-uv run prisma db push || {
+CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma db push --skip-generate || {
   echo "[ensure-db] WARNING: prisma db push failed (database may not be fully ready yet). Retrying once..."
   sleep 2
-  uv run prisma db push
+  CI=1 PRISMA_DISABLE_TELEMETRY=1 uv run prisma db push --skip-generate
 }
 
 echo "[ensure-db] DB ready"
