@@ -17,5 +17,5 @@ APP_HOME_VIEWS: list[View] = [
     View("Assigned Tickets", "assigned-tickets"),
     View("Team Tags", "team-tags"),
     View("DM User", "maintainer-dm", maintainer_only=True),
-    View("My Stats", "my-stats"),
+    View("RSVPs", "my-stats"),
 ]
