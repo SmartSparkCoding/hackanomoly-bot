@@ -62,6 +62,7 @@ class Environment:
         self.port = int(os.environ.get("PORT", 3000))
 
         self.slack_heartbeat_channel = os.environ.get("SLACK_HEARTBEAT_CHANNEL")
+        self.slack_rsvp_channel = os.environ.get("SLACK_RSVP_CHANNEL")
 
         unset = [key for key, value in self.__dict__.items() if value == "unset"]
 

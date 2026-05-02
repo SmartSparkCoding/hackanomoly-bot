@@ -12,6 +12,8 @@ from starlette.applications import Starlette
 from nephthys.tasks.close_stale import check_unclosed_tickets
 from nephthys.tasks.daily_stats import send_daily_stats
 from nephthys.tasks.fulfillment_reminder import send_fulfillment_reminder
+from nephthys.tasks.rsvp_tracker import poll_rsvp_count
+from nephthys.tasks.rsvp_tracker import send_rsvp_daily_summary
 from nephthys.tasks.update_helpers import update_helpers
 from nephthys.utils.delete_thread import process_queue
 from nephthys.utils.env import env
@@ -47,6 +49,13 @@ async def main(_app: Starlette):
         scheduler = AsyncIOScheduler(timezone="Europe/London")
         if env.daily_summary:
             scheduler.add_job(send_daily_stats, "cron", hour=0, minute=0)
+            scheduler.add_job(
+                send_rsvp_daily_summary,
+                "cron",
+                hour=0,
+                minute=0,
+                timezone="Europe/London",
+            )
 
         scheduler.add_job(
             send_fulfillment_reminder,
@@ -54,6 +63,14 @@ async def main(_app: Starlette):
             hour=14,
             minute=0,
             timezone="Europe/London",
+        )
+
+        scheduler.add_job(
+            poll_rsvp_count,
+            "interval",
+            seconds=60,
+            max_instances=1,
+            next_run_time=datetime.now(),
         )
 
         scheduler.add_job(
