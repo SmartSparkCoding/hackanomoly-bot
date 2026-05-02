@@ -101,20 +101,27 @@ async def poll_rsvp_count():
     global _last_known_count
 
     if not env.slack_rsvp_channel:
+        logging.debug("RSVP polling skipped: SLACK_RSVP_CHANNEL not set")
         return
 
+    logging.info("RSVP polling started")
     current_count = await _fetch_current_count()
     if current_count is None:
+        logging.warning("RSVP polling failed to fetch count")
         return
 
+    logging.info(f"RSVP current count: {current_count}")
     _update_day_rollover(current_count)
 
     if _last_known_count is None:
         _last_known_count = current_count
+        logging.info(f"RSVP initialized with count: {current_count}")
         return
 
     previous_count = _last_known_count
     if current_count <= _last_known_count:
+        if current_count < _last_known_count:
+            logging.info(f"RSVP count decreased from {_last_known_count} to {current_count}")
         _last_known_count = current_count
         return
 
@@ -123,6 +130,7 @@ async def poll_rsvp_count():
 
     until_next_goal = _format_until_next_goal(current_count)
 
+    logging.info(f"RSVP increase detected: {delta} new RSVPs (total: {current_count})")
     await _post_message(
         f":incoming_envelope: {delta} new RSVP{'s' if delta != 1 else ''} just came in. Total: *{current_count}* RSVP{'s' if current_count != 1 else ''}. {until_next_goal}"
     )
@@ -130,6 +138,7 @@ async def poll_rsvp_count():
     for goal in RSVP_GOALS:
         if previous_count < goal <= current_count and goal not in _announced_goals:
             _announced_goals.add(goal)
+            logging.info(f"RSVP milestone {goal} reached!")
             await _post_message(
                 f":tada::partyparrot: *We just hit {goal} RSVPs!!* Keep them coming! :fireworks:"
             )

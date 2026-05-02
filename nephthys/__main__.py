@@ -72,6 +72,7 @@ async def main(_app: Starlette):
             max_instances=1,
             next_run_time=datetime.now(),
         )
+        logging.info("RSVP polling job registered: runs every 60 seconds")
 
         scheduler.add_job(
             check_unclosed_tickets,
